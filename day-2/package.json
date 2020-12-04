@@ -1,0 +1,13 @@
+{
+  "name": "day-1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node -r esm index.js"
+  },
+  "author": "Oldrich Kruchna",
+  "dependencies": {
+    "esm": "^3.2.25"
+  }
+}
