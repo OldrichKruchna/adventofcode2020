@@ -1,20 +1,53 @@
+import { debug } from 'console';
 import fs from 'fs';
 
 const data = fs.readFileSync('./passwords.txt').toString();
 
-const passwordRecords = data.split(/\n/g);
-const passwords = passwordRecords.map(record => {
+const rawPasswordRecords = data.split(/\n/g);
+const passwordRecords = rawPasswordRecords.map(record => {
     const parsedChunks = record.split(/ /);
     const policyCount = parsedChunks[0];
     // extract policy letter with ":" at the end
-    const policyLetter = parsedChunks[1].substring(0, tmp[1].length - 1);
+    const policyLetter = parsedChunks[1].substring(0, parsedChunks[1].length - 1);
     const password = parsedChunks[2];
 
     const parsedPolicyCount = policyCount.split(/-/);
     const policyCountMin = parseInt(parsedPolicyCount[0]);
     const policyCountMax = parseInt(parsedPolicyCount[1]);
 
-    debugger;
+    return {
+        policy: {
+            min: policyCountMin,
+            max: policyCountMax,
+            letter: policyLetter
+        },
+        password
+    };
 });
-debugger;
-// const parsedExpenseReport = expenseReport.map(item => parseInt(item));
+
+const validPasswords = passwordRecords.filter(passwordRecord => {
+    let counter = 0;
+
+    if (passwordRecord.policy.max === 0) {
+        return false;
+    }
+    try {
+        for (let c of passwordRecord.password) {
+            if(c === passwordRecord.policy.letter) {
+                counter++;
+            }
+
+            if(counter > passwordRecord.policy.max) {
+                throw new Error('Max count overflowed.')
+            }
+        }
+        if (counter < passwordRecord.policy.min) {
+            throw new Error('Min not fullfiled.')
+        }
+    } catch (error) {
+        return false;
+    }
+    return true;
+});
+
+console.log('Number of valid passwords:', validPasswords.length);
